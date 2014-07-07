@@ -1,8 +1,11 @@
+var voidlayer, d = 0;
 function tiled(settings, callback){
 	this.file = settings.filename;
 	this.layer;
 	this.tileRange = {};
 	this.tileSets = {};
+	this.objectOffsetX = 480;
+	this.objectOffsetY = 130;
 
 	this.read = function(){
 		var thisClass = this;
@@ -18,18 +21,45 @@ function tiled(settings, callback){
 	this.render = function(canvas, map_data){
 
 		for(t = 0; t < this.layer.layers.length; t++){
-		
-			for(i = 0; i < map_data.length; i++){
-				var tile = map_data[i];
+			var layer = this.layer.layers[t];
+			if(layer.type == "tilelayer"){
+					for(i = 0; i < map_data.length; i++){
+					var tile = map_data[i];
 
-					if(this.layer.layers[t].data[i] != 0){
-						var blockdata = this.layer.layers[t].data[i];
-					 	//canvas.fillRect(tile.x , tile.y, 32, 32);
-					 	var key  = this.getSpritePack(blockdata);
-					 	var metaId = Math.abs(key - blockdata);
-					 	this.tileSets[this.tileRange[key]][metaId].draw(ctx, tile.x, tile.y);
+						if(this.layer.layers[t].data[i] != 0){
+							var blockdata = this.layer.layers[t].data[i];
+						 	//canvas.fillRect(tile.x , tile.y, 32, 32);
+						 	var key  = this.getSpritePack(blockdata);
+						 	var metaId = Math.abs(key - blockdata);
+						 	this.tileSets[this.tileRange[key]][metaId].draw(ctx, tile.x, tile.y);
+						}
+				 	}
+			}else if(layer.type == "objectgroup"){
+				voidlayer = layer;
+				for(i = 0; i < layer.objects.length; i++){
+					var object = layer.objects[i].polyline;
+					if(d == 0){
+						d = 1;
+						console.log(object);
 					}
-			 }
+					
+					ctx.beginPath(); 
+					ctx.lineWidth="5";
+					ctx.strokeStyle="yellow";
+					for(o = 0 ; o < object.length; o++){
+						if(o == 0){
+							ctx.moveTo(object[o].x+this.objectOffsetX, object[o].y+this.objectOffsetY );
+						}
+						ctx.lineTo(object[o].x+this.objectOffsetX, object[o].y+this.objectOffsetY);
+					}
+					ctx.stroke();
+					
+					
+					
+				}
+			}
+		
+			
 				
 			
 		}	
