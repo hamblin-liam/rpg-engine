@@ -36,24 +36,31 @@ function tiled(settings, callback) {
             } else if (layer.type == "objectgroup") {
                 voidlayer = layer;
                 for (i = 0; i < layer.objects.length; i++) {
-                    var object = layer.objects[i].polyline;
-                    var offset = {
-                        x: layer.objects[i].x,
-                        y: layer.objects[i].y
-                    };
-                    if (this.highlight) {
-                        ctx.beginPath();
-                        ctx.lineWidth = this.lineWidth;
-                        ctx.strokeStyle = "yellow";
-                        for (o = 0; o < object.length; o++) {
-                            if (o == 0) {
-                                ctx.moveTo(object[o].x + offset.x, object[o].y + offset.y);
-                            }
-                            ctx.lineTo(object[o].x + offset.x, object[o].y + offset.y);
-                        }
-                        ctx.stroke();
-                    }
+                    if(layer.objects[i].polyline){
+                                var object = layer.objects[i].polyline;
+                                var offset = {
+                                    x: layer.objects[i].x,
+                                    y: layer.objects[i].y
+                                };
+                                if (this.highlight) {
+                                    ctx.beginPath();
+                                    ctx.lineWidth = this.lineWidth;
+                                    ctx.strokeStyle = "yellow";
+                                    for (o = 0; o < object.length; o++) {
+                                        if (o == 0) {
+                                            ctx.moveTo(object[o].x + offset.x, object[o].y + offset.y);
+                                        }
+                                        ctx.lineTo(object[o].x + offset.x, object[o].y + offset.y);
+                                    }
+                                    ctx.stroke();
+                                }
 
+                    }else if(layer.objects[i].ellipse){
+
+                    }else{
+                        ctx.fillRect(layer.objects[i].x, layer.objects[i].y, layer.objects[i].width, layer.objects[i].height);
+                    }
+                  
                 }
             }
 
