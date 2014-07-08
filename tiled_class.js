@@ -56,9 +56,19 @@ function tiled(settings, callback) {
                                 }
 
                     }else if(layer.objects[i].ellipse){
-
+                                ctx.beginPath();
+                                var radius = 10;
+                                ctx.arc(layer.objects[i].x + (layer.objects[i].width/2), layer.objects[i].y + (layer.objects[i].height/2), radius , 0, 2 * Math.PI, false);
+                                ctx.fillStyle = 'green';
+                                ctx.fill();
+                                ctx.lineWidth = 5;
+                                ctx.strokeStyle = '#003300';
+                                ctx.stroke();
                     }else{
+                        ctx.save();
+                        ctx.fillStyle = "rgba(220, 20, 60, 0.8)";
                         ctx.fillRect(layer.objects[i].x, layer.objects[i].y, layer.objects[i].width, layer.objects[i].height);
+                        ctx.restore();
                     }
                   
                 }
