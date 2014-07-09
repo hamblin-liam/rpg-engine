@@ -3,8 +3,9 @@ function tiled(settings, callback) {
     this.layer;
     this.tileRange = {};
     this.tileSets = {};
-    this.highlight = true;
+    this.highlight = false;
     this.lineWidth = 2;
+    this.grid = false;
 
     this.read = function () {
         var thisClass = this;
@@ -56,19 +57,23 @@ function tiled(settings, callback) {
                                 }
 
                     }else if(layer.objects[i].ellipse){
-                                ctx.beginPath();
-                                var radius = 10;
+                        if(this.highlight){
+                             ctx.beginPath();
+                                var radius = 15;
                                 ctx.arc(layer.objects[i].x + (layer.objects[i].width/2), layer.objects[i].y + (layer.objects[i].height/2), radius , 0, 2 * Math.PI, false);
-                                ctx.fillStyle = 'green';
-                                ctx.fill();
                                 ctx.lineWidth = 5;
-                                ctx.strokeStyle = '#003300';
+                                ctx.strokeStyle = 'rgba(67, 205, 128, 0.8)';
                                 ctx.stroke();
+                        }
+                               
                     }else{
-                        ctx.save();
-                        ctx.fillStyle = "rgba(220, 20, 60, 0.8)";
-                        ctx.fillRect(layer.objects[i].x, layer.objects[i].y, layer.objects[i].width, layer.objects[i].height);
-                        ctx.restore();
+                        if(this.highlight){
+                                ctx.save();
+                                ctx.fillStyle = "rgba(220, 20, 60, 0.8)";
+                                ctx.fillRect(layer.objects[i].x, layer.objects[i].y, layer.objects[i].width, layer.objects[i].height);
+                                ctx.restore();
+                        }
+                      
                     }
                   
                 }
@@ -77,6 +82,16 @@ function tiled(settings, callback) {
 
 
 
+        }
+        if(this.grid){
+             for(i = 0; i < map_data.length; i++){
+                    var tile = map_data[i];
+                    ctx.beginPath();
+                    ctx.rect(tile.x, tile.y, tile.width, tile.height);
+                    ctx.lineWidth = 2;
+                    ctx.strokeStyle = 'black';
+                    ctx.stroke();
+                }
         }
     };
 
@@ -133,6 +148,25 @@ function tiled(settings, callback) {
             };
             images[src].src = sources[src];
         }
+    };
+    this.keys  = function(){
+        if(keystate[72]){
+            delete keystate[72];
+            if(this.highlight){
+                this.highlight = false;
+            }else{
+                this.highlight = true;
+            }
+        }
+        if(keystate[71]){
+            delete keystate[71];
+            if(this.grid){
+                this.grid = false;
+            }else{
+                this.grid = true;
+            }
+        }
+
     };
 
 

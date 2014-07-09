@@ -1,4 +1,4 @@
-var canvas, ctx, level1, tiled_data, resourcesLoaded = false;
+var canvas, ctx, level1, tiled_data, keystate, resourcesLoaded = false;
 
 
 function main() {
@@ -10,11 +10,21 @@ function main() {
 
     ctx = canvas.getContext("2d");
 
+    keystate = {};
+
+    document.addEventListener("keydown", function(evt) {
+            keystate = {};
+            keystate[evt.keyCode] = true;
+    });
+
+    document.addEventListener("keyup", function(evt) {
+            delete keystate[evt.keyCode];
+    });
+
     init();
 
 
 }
-
 function init() {
     tiled_data = new tiled({
         filename: "map.json"
@@ -33,6 +43,7 @@ function init() {
 
 function runner() {
     var loop = function () {
+        tiled_data.keys();
         render();
         update();
         draw();
