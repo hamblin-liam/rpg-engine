@@ -165,7 +165,6 @@ function tiled(settings, callback) {
     this.keys  = function(){
         if(keystate[72]){
             delete keystate[72];
-            this.setMap("map2.json");
             if(this.highlight){
                 this.highlight = false;
             }else{
