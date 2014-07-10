@@ -6,20 +6,33 @@ function tiled(settings, callback) {
     this.highlight = false;
     this.lineWidth = 2;
     this.grid = false;
+    this.map;
+
+
 
     this.read = function () {
         var thisClass = this;
-        ajax("GET", this.file, "", function (result) {
-            callback(JSON.parse(result));
-            thisClass.layer = JSON.parse(result);
+        ajax("GET", this.file, "", function (layer) {
+            layer = JSON.parse(layer);
+            thisClass.map = new map({
+            width: layer.width * layer.tilewidth,
+            height: layer.height * layer.tileheight,
+            tileWidth: layer.tilewidth,
+            tileHeight: layer.tileheight
+            });
+            thisClass.layer = layer;
             thisClass.loadTilePacks();
+            if(callback !== undefined){
+                 callback(true);
+            }
+           
 
         });
 
     };
 
-    this.render = function (canvas, map_data) {
-
+    this.render = function (canvas) {
+        var map_data  = this.map.hashMap;
         for (t = 0; t < this.layer.layers.length; t++) {
             var layer = this.layer.layers[t];
             if (layer.type == "tilelayer") {
@@ -152,6 +165,7 @@ function tiled(settings, callback) {
     this.keys  = function(){
         if(keystate[72]){
             delete keystate[72];
+            this.setMap("map2.json");
             if(this.highlight){
                 this.highlight = false;
             }else{
@@ -168,6 +182,13 @@ function tiled(settings, callback) {
         }
 
     };
+    this.setMap = function(map, callback){
+        this.file = map;
+        this.read();
+        if(callback !== undefined){
+           callback(true); 
+        }    
+    };  
 
 
     this.read();

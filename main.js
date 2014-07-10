@@ -1,4 +1,4 @@
-var canvas, ctx, level1, tiled_data, keystate, resourcesLoaded = false;
+var canvas, ctx, level1, level2, tiled_data, keystate, resourcesLoaded = false;
 
 
 function main() {
@@ -28,14 +28,11 @@ function main() {
 function init() {
     tiled_data = new tiled({
         filename: "map.json"
-    }, function (layer) {
-        level1 = new map({
-            width: layer.width * layer.tilewidth,
-            height: layer.height * layer.tileheight,
-            tileWidth: layer.tilewidth,
-            tileHeight: layer.tileheight
-        });
-        runner();
+    }, function (hasloaded) {
+        if(hasloaded){
+             runner();
+        }
+       
     });
 
 
@@ -61,7 +58,7 @@ function runner() {
 
 function render() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    tiled_data.render(ctx, level1.hashMap);
+    tiled_data.render(ctx);
 
 }
 
