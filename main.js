@@ -31,6 +31,7 @@ function init() {
     }, function (hasloaded) {
         if(hasloaded){
              runner();
+
         }
        
     });
@@ -40,7 +41,7 @@ function init() {
 
 function runner() {
     var loop = function () {
-        tiled_data.keys();
+        tiled_data.logic();
         render();
         update();
         draw();
@@ -61,8 +62,6 @@ function render() {
     tiled_data.render(ctx);
 
 }
-
-
 
 function update() {}
 

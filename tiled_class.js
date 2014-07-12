@@ -7,9 +7,12 @@ function tiled(settings, callback) {
     this.lineWidth = 2;
     this.grid = false;
     this.map;
-
-
-
+    this.mouse = {x:0, y:0};
+    this.now;
+    this.fps = 0;
+    this.lastUpdate = (new Date)*1;
+    this.fpsFilter = 50;
+    this.currentFPS = "0.0fps";
     this.read = function () {
         var thisClass = this;
         ajax("GET", this.file, "", function (layer) {
@@ -106,6 +109,12 @@ function tiled(settings, callback) {
                     ctx.stroke();
                 }
         }
+
+        var message = 'Mouse position: ' + this.mouse.x + ',' + this.mouse.y;
+        ctx.font = '20pt Calibri';
+        ctx.fillStyle = 'black';
+        ctx.fillText(message, 10, 25);
+        ctx.fillText(this.currentFPS, 10, 50);
     };
 
     this.getSpritePack = function (blockid) {
@@ -162,7 +171,7 @@ function tiled(settings, callback) {
             images[src].src = sources[src];
         }
     };
-    this.keys  = function(){
+    this.logic  = function(){
         if(keystate[72]){
             delete keystate[72];
             if(this.highlight){
@@ -174,12 +183,19 @@ function tiled(settings, callback) {
         if(keystate[71]){
             delete keystate[71];
             if(this.grid){
+                  this.lineWidth = 2;
                 this.grid = false;
             }else{
+                this.lineWidth = 5;
                 this.grid = true;
             }
         }
 
+        var thisFrameFPS = 1000 / ((this.now=new Date) - this.lastUpdate);
+            if (this.now!=this.lastUpdate){
+            this.fps += (thisFrameFPS - this.fps) / this.fpsFilter;
+            this.lastUpdate = this.now;
+        }
     };
     this.setMap = function(map, callback){
         this.file = map;
@@ -187,8 +203,17 @@ function tiled(settings, callback) {
         if(callback !== undefined){
            callback(true); 
         }    
-    };  
+    };
 
+    var thisClass = this;
+    canvas.addEventListener('mousemove', function(evt) {
+        var rect = canvas.getBoundingClientRect();
+        thisClass.mouse =  {x: evt.clientX - rect.left,
+          y: evt.clientY - rect.top};
+      }, false);
+    setInterval(function(){
+       thisClass.currentFPS = thisClass.fps.toFixed(1) + "fps";
+    }, 1000);
 
     this.read();
 }
