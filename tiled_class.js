@@ -62,6 +62,14 @@ function tiled(settings, callback) {
             } else if (layer.type == "objectgroup") {
                 voidlayer = layer;
                 for (i = 0; i < layer.objects.length; i++) {
+                    if(layer.objects[i].name != ""){
+                        ctx.save();
+                        ctx.font = '15pt Calibri';
+                        ctx.fillStyle = 'black';
+                        ctx.textAlign="center";
+                        ctx.fillText(layer.objects[i].name, layer.objects[i].x + (layer.objects[i].width/2), layer.objects[i].y - 2);
+                        ctx.restore();
+                    }
                     if(layer.objects[i].polyline || layer.objects[i].polygon){
                                 var object;
                                 if(layer.objects[i].polygon){
