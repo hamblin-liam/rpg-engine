@@ -32,7 +32,6 @@ function tiled(settings, callback) {
             if (callback !== undefined) {
                 callback(true);
             }
-            this.downloading = false;
 
         });
 
@@ -65,13 +64,13 @@ function tiled(settings, callback) {
                 voidlayer = layer;
                 for (i = 0; i < layer.objects.length; i++) {
                     if (layer.objects[i].name != "" && layer.objects[i].properties.onhover) {
-                        if(this.mouse.x >= layer.objects[i].x && this.mouse.y >= layer.objects[i].y && this.mouse.x <= layer.objects[i].x + layer.objects[i].width && this.mouse.y <= layer.objects[i].y + layer.objects[i].height){
-                        ctx.save();
-                        ctx.font = layer.objects[i].properties.font ? layer.objects[i].properties.font : "15pt Calibri";
-                        ctx.fillStyle = layer.objects[i].properties.fontColour ? layer.objects[i].properties.fontColour : "black" ;
-                        ctx.textAlign = "center";
-                        ctx.fillText(layer.objects[i].name, layer.objects[i].x + (layer.objects[i].width / 2), layer.objects[i].y - 2);
-                        ctx.restore();
+                        if (this.mouse.x >= layer.objects[i].x && this.mouse.y >= layer.objects[i].y && this.mouse.x <= layer.objects[i].x + layer.objects[i].width && this.mouse.y <= layer.objects[i].y + layer.objects[i].height) {
+                            ctx.save();
+                            ctx.font = layer.objects[i].properties.font ? layer.objects[i].properties.font : "15pt Calibri";
+                            ctx.fillStyle = layer.objects[i].properties.fontColour ? layer.objects[i].properties.fontColour : "black";
+                            ctx.textAlign = "center";
+                            ctx.fillText(layer.objects[i].name, layer.objects[i].x + (layer.objects[i].width / 2), layer.objects[i].y - 2);
+                            ctx.restore();
                         }
                     }
                     if (layer.objects[i].polyline || layer.objects[i].polygon) {
@@ -105,15 +104,15 @@ function tiled(settings, callback) {
 
                     } else if (layer.objects[i].ellipse) {
                         if (this.highlight) {
-                            
-                                ctx.beginPath();
-                                var radius = 15;
-                                ctx.arc(layer.objects[i].x + (layer.objects[i].width / 2), layer.objects[i].y + (layer.objects[i].height / 2), radius, 0, 2 * Math.PI, false);
-                                ctx.lineWidth = 5;
-                                ctx.strokeStyle = 'rgba(67, 205, 128, 0.8)';
-                                ctx.stroke();
-                            
-                            
+
+                            ctx.beginPath();
+                            var radius = 15;
+                            ctx.arc(layer.objects[i].x + (layer.objects[i].width / 2), layer.objects[i].y + (layer.objects[i].height / 2), radius, 0, 2 * Math.PI, false);
+                            ctx.lineWidth = 5;
+                            ctx.strokeStyle = 'rgba(67, 205, 128, 0.8)';
+                            ctx.stroke();
+
+
                         }
 
                     } else {
@@ -149,6 +148,8 @@ function tiled(settings, callback) {
         ctx.fillStyle = 'black';
         ctx.fillText(message, 10, 25);
         ctx.fillText(this.currentFPS, 10, 50);
+
+        this.selector.draw(thisClass);
     };
 
     this.getSpritePack = function (blockid) {
@@ -241,17 +242,37 @@ function tiled(settings, callback) {
         }
     };
 
+    this.selector = {
+        colour: "rgba(0, 255, 127, 0.6)",
+        draw: function (tiled_data) {
+            for (m = 0; m < tiled_data.map.hashMap.length; m++) {
+                var tile = tiled_data.map.hashMap[m];
+                if (tiled_data.mouse.x >= tile.x && tiled_data.mouse.y >= tile.y && tiled_data.mouse.x <= tile.x + tiled_data.layer.tilewidth && tiled_data.mouse.y <= tile.y + tiled_data.layer.tileheight) {
+                    ctx.save()
+                    ctx.fillStyle = this.colour;
+                    ctx.fillRect(tile.x, tile.y, tiled_data.layer.tilewidth, tiled_data.layer.tileheight);
+                    ctx.restore();
+                }
+            }
+        },
+
+        setColour: function (colour) {
+            this.colour = colour;
+        }
+    };
+
     var thisClass = this;
     canvas.addEventListener('mousemove', function (evt) {
+        thisClass.selector.draw(thisClass);
         var rect = canvas.getBoundingClientRect();
         thisClass.mouse = {
             x: evt.clientX - rect.left,
             y: evt.clientY - rect.top
         };
     }, false);
-    canvas.addEventListener('mousedown', function(evt){
-         var rect = canvas.getBoundingClientRect();
-            thisClass.mouse = {
+    canvas.addEventListener('mousedown', function (evt) {
+        var rect = canvas.getBoundingClientRect();
+        thisClass.mouse = {
             x: evt.clientX - rect.left,
             y: evt.clientY - rect.top
         };
