@@ -14,6 +14,7 @@ function tiled(settings, callback) {
     this.fpsFilter = 50;
     this.currentFPS = "0.0fps";
     this.read = function () {
+        this.downloading = true;
         var thisClass = this;
         ajax("GET", this.file, "", function (layer) {
             layer = JSON.parse(layer);
@@ -28,7 +29,7 @@ function tiled(settings, callback) {
             if(callback !== undefined){
                  callback(true);
             }
-           
+           this.downloading = false;
 
         });
 
@@ -47,14 +48,32 @@ function tiled(settings, callback) {
                         //canvas.fillRect(tile.x , tile.y, 32, 32);
                         var key = this.getSpritePack(blockdata);
                         var metaId = Math.abs(key - blockdata);
-                        this.tileSets[this.tileRange[key]][metaId].draw(ctx, tile.x, tile.y);
+                        try {
+                                this.tileSets[this.tileRange[key]][metaId].draw(ctx, tile.x, tile.y); 
+                            }
+                        catch(error) {
+                                ctx.font = '20pt Calibri';
+                                ctx.fillStyle = 'red';
+                                ctx.fillText("Rendering", 10, 70);
+                        }
+                        
                     }
                 }
             } else if (layer.type == "objectgroup") {
                 voidlayer = layer;
                 for (i = 0; i < layer.objects.length; i++) {
-                    if(layer.objects[i].polyline){
-                                var object = layer.objects[i].polyline;
+                    if(layer.objects[i].polyline || layer.objects[i].polygon){
+                                var object;
+                                if(layer.objects[i].polygon){
+                                     object = layer.objects[i].polygon;
+                                     object.push({
+                                        x: 0,
+                                        y: 0
+                                     });
+                                 }else{
+                                     object = layer.objects[i].polyline;
+                                 }
+                               
                                 var offset = {
                                     x: layer.objects[i].x,
                                     y: layer.objects[i].y
@@ -71,7 +90,7 @@ function tiled(settings, callback) {
                                     }
                                     ctx.stroke();
                                 }
-
+                
                     }else if(layer.objects[i].ellipse){
                         if(this.highlight){
                              ctx.beginPath();
@@ -198,6 +217,8 @@ function tiled(settings, callback) {
         }
     };
     this.setMap = function(map, callback){
+        this.tileRange = {};
+        //this.tileSets = {};
         this.file = map;
         this.read();
         if(callback !== undefined){
