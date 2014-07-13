@@ -245,15 +245,18 @@ function tiled(settings, callback) {
     this.selector = {
         colour: "rgba(0, 255, 127, 0.6)",
         draw: function (tiled_data) {
-            for (m = 0; m < tiled_data.map.hashMap.length; m++) {
-                var tile = tiled_data.map.hashMap[m];
-                if (tiled_data.mouse.x >= tile.x && tiled_data.mouse.y >= tile.y && tiled_data.mouse.x <= tile.x + tiled_data.layer.tilewidth && tiled_data.mouse.y <= tile.y + tiled_data.layer.tileheight) {
-                    ctx.save()
-                    ctx.fillStyle = this.colour;
-                    ctx.fillRect(tile.x, tile.y, tiled_data.layer.tilewidth, tiled_data.layer.tileheight);
-                    ctx.restore();
+            if (tiled_data !== undefined && tiled_data.map !== undefined) {
+                for (m = 0; m < tiled_data.map.hashMap.length; m++) {
+                    var tile = tiled_data.map.hashMap[m];
+                    if (tiled_data.mouse.x >= tile.x && tiled_data.mouse.y >= tile.y && tiled_data.mouse.x <= tile.x + tiled_data.layer.tilewidth && tiled_data.mouse.y <= tile.y + tiled_data.layer.tileheight) {
+                        ctx.save()
+                        ctx.fillStyle = this.colour;
+                        ctx.fillRect(tile.x, tile.y, tiled_data.layer.tilewidth, tiled_data.layer.tileheight);
+                        ctx.restore();
+                    }
                 }
             }
+
         },
 
         setColour: function (colour) {
