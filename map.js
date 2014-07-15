@@ -4,9 +4,9 @@ function map(settings) {
     this.height = settings.height;
     this.tileWidth = settings.tileWidth;
     this.tileHeight = settings.tileHeight;
-
-    this.rows = this.width / this.tileWidth;
-    this.columns = this.height / this.tileHeight;
+    
+    this.rows = this.height / this.tileWidth;
+    this.columns = this.width / this.tileHeight;
 
     this.init = function () {
         for (r = 0; r < this.rows; r++) {

@@ -45,6 +45,7 @@ function runner() {
         render();
         update();
         draw();
+        camera();
         window.requestAnimationFrame(loop, ctx);
     };
     if (resourcesLoaded) {
@@ -58,10 +59,14 @@ function runner() {
 }
 
 function render() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    var camera = tiled_data.camera.getOffset();
+    ctx.clearRect(0 + camera.xOffset , 0 + camera.yOffset, canvas.width, canvas.height);
     tiled_data.render(ctx);
     
 
+}
+function camera(){
+    tiled_data.camera.move();
 }
 
 function update() {}

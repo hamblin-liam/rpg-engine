@@ -17,7 +17,6 @@ function tiled(settings, callback) {
     this.fpsFilter = 50;
     this.currentFPS = "0.0fps";
     this.read = function () {
-        this.downloading = true;
         var thisClass = this;
         ajax("GET", this.file, "", function (layer) {
             layer = JSON.parse(layer);
@@ -38,6 +37,7 @@ function tiled(settings, callback) {
     };
 
     this.render = function (canvas) {
+        var camera = this.camera.getOffset();
         var map_data = this.map.hashMap;
         for (t = 0; t < this.layer.layers.length; t++) {
             var layer = this.layer.layers[t];
@@ -45,13 +45,16 @@ function tiled(settings, callback) {
                 for (i = 0; i < map_data.length; i++) {
                     var tile = map_data[i];
 
-                    if (this.layer.layers[t].data[i] != 0) {
-                        var blockdata = this.layer.layers[t].data[i];
+                    if (layer.data[i] != 0) {
+                        var blockdata = layer.data[i];
                         //canvas.fillRect(tile.x , tile.y, 32, 32);
                         var key = this.getSpritePack(blockdata);
                         var metaId = Math.abs(key - blockdata);
                         try {
-                            this.tileSets[this.tileRange[key]][metaId].draw(ctx, tile.x, tile.y);
+                            if(tile.x + 32 > camera.xOffset && tile.x < window.innerWidth + camera.xOffset && tile.y < window.innerHeight + camera.yOffset){
+                                this.tileSets[this.tileRange[key]][metaId].draw(ctx, tile.x, tile.y);
+                            }
+                            
                         } catch (error) {
                             ctx.font = '20pt Calibri';
                             ctx.fillStyle = 'red';
@@ -144,10 +147,12 @@ function tiled(settings, callback) {
         }
 
         var message = 'Mouse position: ' + this.mouse.x + ',' + this.mouse.y;
+        var camera = this.camera.getOffset();
         ctx.font = '20pt Calibri';
         ctx.fillStyle = 'black';
-        ctx.fillText(message, 10, 25);
-        ctx.fillText(this.currentFPS, 10, 50);
+        ctx.fillText(message, 10 + camera.xOffset, 25 + camera.yOffset);
+        ctx.fillText(this.currentFPS, 10 + camera.xOffset, 50 + camera.yOffset);
+         ctx.fillText("Start row: " + camera.xOffset/2, 10 + camera.xOffset, 75 + camera.yOffset);
 
         this.selector.draw(thisClass);
     };
@@ -264,22 +269,49 @@ function tiled(settings, callback) {
         }
     };
 
+    this.camera = {
+        x : 0,
+        y : 0,
+        max: 200,
+        view : {
+            xMin: this.x,
+            xMax: this.x,
+            yMin: this.y,
+            yMax: this.y
+        },
+        move : function(){
+            if(this.x < this.max){
+            this.x += 4;
+            ctx.translate(-4, this.y);
+            }
+           
+        },
+
+        getOffset : function(){
+            return {
+                xOffset : this.x,
+                yOffset : this.y
+            };
+        }
+    };
+
     var thisClass = this;
     canvas.addEventListener('mousemove', function (evt) {
         thisClass.selector.draw(thisClass);
         var rect = canvas.getBoundingClientRect();
+        var canvasOffset = thisClass.camera.getOffset();
         thisClass.mouse = {
-            x: evt.clientX - rect.left,
-            y: evt.clientY - rect.top
+            x: evt.clientX - rect.left + canvasOffset.xOffset,
+            y: evt.clientY - rect.top + canvasOffset.yOffset
         };
     }, false);
-    canvas.addEventListener('mousedown', function (evt) {
+    /*canvas.addEventListener('mousedown', function (evt) {
         var rect = canvas.getBoundingClientRect();
         thisClass.mouse = {
             x: evt.clientX - rect.left,
             y: evt.clientY - rect.top
         };
-    }, false);
+    }, false);*/
     setInterval(function () {
         thisClass.currentFPS = thisClass.fps.toFixed(1) + "fps";
     }, 1000);
