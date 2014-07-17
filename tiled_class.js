@@ -51,10 +51,10 @@ function tiled(settings, callback) {
                         var key = this.getSpritePack(blockdata);
                         var metaId = Math.abs(key - blockdata);
                         try {
-                            if(tile.x + 32 > camera.xOffset && tile.x < window.innerWidth + camera.xOffset && tile.y < window.innerHeight + camera.yOffset){
+                            if (tile.x + this.layer.tilewidth > camera.xOffset && tile.x < window.innerWidth + camera.xOffset && tile.y + this.layer.tileheight > camera.yOffset && tile.y < window.innerHeight + camera.yOffset) {
                                 this.tileSets[this.tileRange[key]][metaId].draw(ctx, tile.x, tile.y);
                             }
-                            
+
                         } catch (error) {
                             ctx.font = '20pt Calibri';
                             ctx.fillStyle = 'red';
@@ -152,7 +152,6 @@ function tiled(settings, callback) {
         ctx.fillStyle = 'black';
         ctx.fillText(message, 10 + camera.xOffset, 25 + camera.yOffset);
         ctx.fillText(this.currentFPS, 10 + camera.xOffset, 50 + camera.yOffset);
-         ctx.fillText("Start row: " + camera.xOffset/2, 10 + camera.xOffset, 75 + camera.yOffset);
 
         this.selector.draw(thisClass);
     };
@@ -270,27 +269,23 @@ function tiled(settings, callback) {
     };
 
     this.camera = {
-        x : 0,
-        y : 0,
-        max: 200,
-        view : {
-            xMin: this.x,
-            xMax: this.x,
-            yMin: this.y,
-            yMax: this.y
-        },
-        move : function(){
-            if(this.x < this.max){
-            this.x += 4;
-            ctx.translate(-4, this.y);
+        x: 0,
+        y: 0,
+        max: 400,
+        speed: 8,
+        move: function () {
+            if (this.y < this.max) {
+                //this.x += this.speed;
+                this.y += this.speed;
+                ctx.translate(0, -this.speed);
             }
-           
+
         },
 
-        getOffset : function(){
+        getOffset: function () {
             return {
-                xOffset : this.x,
-                yOffset : this.y
+                xOffset: this.x,
+                yOffset: this.y
             };
         }
     };
