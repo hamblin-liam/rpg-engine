@@ -1,4 +1,4 @@
-var canvas, ctx, level1, level2, tiled_data, keystate, resourcesLoaded = false;
+var canvas, ctx, level1, level2, tiled_data, keystate, resourcesLoaded = false, dopan = false;
 
 
 function main() {
@@ -6,6 +6,7 @@ function main() {
     canvas = document.createElement("canvas");
     canvas.height = window.innerHeight;
     canvas.width = window.innerWidth;
+    canvas.innerText = "Canvas is not supported in your browser!";
     document.body.appendChild(canvas);
 
     ctx = canvas.getContext("2d");
@@ -20,6 +21,7 @@ function main() {
     document.addEventListener("keyup", function(evt) {
             delete keystate[evt.keyCode];
     });
+    //ctx.scale(1.5,1.5);
 
     init();
 
@@ -66,7 +68,10 @@ function render() {
 
 }
 function camera(){
-    tiled_data.camera.move();
+    if(dopan){
+         tiled_data.camera.move();
+    }
+   
 }
 
 function update() {}

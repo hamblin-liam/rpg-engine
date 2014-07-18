@@ -229,6 +229,10 @@ function tiled(settings, callback) {
                 this.grid = true;
             }
         }
+          if (keystate[80]) {
+            delete keystate[80];
+            dopan = true;
+        }
 
         var thisFrameFPS = 1000 / ((this.now = new Date) - this.lastUpdate);
         if (this.now != this.lastUpdate) {
@@ -271,13 +275,17 @@ function tiled(settings, callback) {
     this.camera = {
         x: 0,
         y: 0,
-        max: 400,
+        tiled: this,
+        max: 0,
         speed: 8,
         move: function () {
-            if (this.y < this.max) {
-                //this.x += this.speed;
-                this.y += this.speed;
-                ctx.translate(0, -this.speed);
+            this.max =  this.getCamera().objects[0].polyline[1].x - (window.innerWidth/2);
+
+            if (this.x < this.max) {
+                this.x += this.speed;
+            
+                //this.y += this.speed;
+                ctx.translate(-this.speed, 0);
             }
 
         },
@@ -287,6 +295,15 @@ function tiled(settings, callback) {
                 xOffset: this.x,
                 yOffset: this.y
             };
+        },
+
+        getCamera: function (){
+            //console.log(this.tiled);
+            for(c = 0; c < this.tiled.layer.layers.length; c++){
+                if(this.tiled.layer.layers[c].name == "camera"){
+                    return this.tiled.layer.layers[c];
+                }
+            }
         }
     };
 
