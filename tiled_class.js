@@ -277,15 +277,19 @@ function tiled(settings, callback) {
         y: 0,
         tiled: this,
         max: 0,
+        pos: 1,
         speed: 8,
         move: function () {
-            this.max =  this.getCamera().objects[0].polyline[1].x - (window.innerWidth/2);
+            this.max =  this.getCamera().objects[0].polyline[this.pos].x - (window.innerWidth/2);
 
             if (this.x < this.max) {
                 this.x += this.speed;
             
                 //this.y += this.speed;
                 ctx.translate(-this.speed, 0);
+            }else{
+                dopan = false;
+                this.pos = 2;
             }
 
         },
